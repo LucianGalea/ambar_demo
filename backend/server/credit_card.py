@@ -19,7 +19,7 @@ def destination_all_events():
     db.execute(
         f"""
                 INSERT INTO event_credit_card (
-                    request_body, 
+                    request_body,
                     request_body_hash
                 )
                 VALUES (%s, %s)
@@ -38,14 +38,16 @@ def destination_all_events():
 def latest_events():
     db = connect_to_db()
 
-    db.execute("SELECT request_body FROM event_credit_card  ORDER BY id DESC LIMIT 10;")
+    db.execute(
+        "SELECT request_body FROM event_credit_card  ORDER BY id DESC LIMIT 10;")
     rows = db.fetchall()
     column_names = [col[0] for col in db.description]
 
     results = []
     for row in rows:
         row_key_value_pairs = dict(zip(column_names, row))
-        payload_object = (json.loads(row_key_value_pairs['request_body']))['payload']
+        payload_object = (json.loads(row_key_value_pairs['request_body']))[
+            'payload']
         results.append({
             "partition_key": payload_object["partition_key"],
             "serial_column": payload_object["serial_column"],
@@ -56,7 +58,7 @@ def latest_events():
 
     return results
 
-'''
+
 @credit_card_routes.route('/credit_card/destination/fraud_review', methods=['POST'])
 @requires_auth
 def destination_fraud_review():
@@ -105,4 +107,3 @@ def fraud_review():
         results.append(dict(zip(column_names, row)))
 
     return results
-'''
